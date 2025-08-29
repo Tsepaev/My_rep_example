@@ -36,8 +36,6 @@ def test_auth(user, password, message):
     driver.quit()
 
 
-
-
 def test_context_menu():
     """Проверка вызова контекстного меню + alert"""
     driver = webdriver.Chrome()
@@ -50,4 +48,18 @@ def test_context_menu():
     driver.switch_to.alert.accept()
     check = driver.find_element(By.CSS_SELECTOR, "a[target]").is_enabled()
     assert mes == "You selected a context menu" and check
+    driver.quit()
+
+
+def test_drag_and_drop():
+    """Проверка успешного перемещения элемента"""
+    driver = webdriver.Chrome()
+    driver.get(URL + 'drag_and_drop')
+    # driver.maximize_window()
+    driver.implicitly_wait(5)
+    actions = ActionChains(driver)
+    a = driver.find_element(By.CSS_SELECTOR, "#column-a")
+    b = driver.find_element(By.CSS_SELECTOR, "#column-b")
+    actions.drag_and_drop(a, b).perform()
+    assert a.text == "B"
     driver.quit()
