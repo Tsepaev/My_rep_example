@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
 import pytest
-from time import sleep
 
 
 URL = 'https://the-internet.herokuapp.com/'
@@ -67,13 +66,12 @@ def test_drag_and_drop():
 
 
 def test_scroll():
-    """Проверка скроллинга страницы"""
+    """Cкроллинг страницы"""
     driver = webdriver.Chrome()
     driver.get(URL + 'infinite_scroll')
     driver.maximize_window()
     driver.implicitly_wait(5)
     actions = ActionChains(driver)
-    sleep(2)
-    actions.scroll_by_amount(0, 100).perform()
-    sleep(3)
+    for i in range(1,10):
+        actions.scroll_by_amount(0, 800).pause(1).perform()
     driver.quit()
