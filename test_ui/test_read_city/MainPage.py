@@ -20,11 +20,13 @@ class MainPage:
         self.driver.maximize_window()
         self.driver.get(url)
         self.driver.implicitly_wait(6)
+        WebDriverWait(self.driver, 5). \
+            until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, ".header-location-popup__controls .chg-app-button--primary"))).click()
 
 
     def search(self, book: str):
         """Поиск. Вписать название книги"""
-        sleep(2)
         waiter = WebDriverWait(self.driver, 5)
         self.driver.find_element(By.CSS_SELECTOR, ".search-form__input").send_keys(book)
         waiter.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".suggests-list")))
@@ -64,44 +66,42 @@ class MainPage:
     def close(self):
         self.driver.quit()
 
-
-    def catalog_books(self):
-        WebDriverWait(self.driver, 5).\
-            until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".header-location-popup__controls .chg-app-button--primary"))).click()
-
+    # self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+    def category_books(self, n: int = 0) -> list:
+        """Клик по каталогу, далее книги, получить список категорий и кликнуть по указанной"""
         self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
         self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
         list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
             find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
+        list_booktype[n].click()
+        return list_booktype
+
+
+    def list_books(self) -> list:
+        list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2]. \
+            find_elements(By.CSS_SELECTOR, "a")
+        return list_books
+
+
+    def catalog_books(self):
+        list_booktype = self.category_books()
+        list_books = self.list_books()
+        sleep(1)
         self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
-        sleep(2)
-
-        for x in range(0, len(list_booktype)-1):
-            self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
-            self.driver.find_element(By.CSS_SELECTOR,".categories-level-menu .categories-level-menu__item--active").click()
-            list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
-                find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
-            list_booktype[x].click()
-            list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2].\
-                find_elements(By.CSS_SELECTOR, "a")
+        sleep(1)
+        for i in range(0, len(list_booktype)-1):
+            self.category_books(i)
             self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
-            sleep(2)
-
+            sleep(1)
             for n in range(0, len(list_books)+1):
-                self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
-                self.driver.find_element(By.CSS_SELECTOR,
-                                         ".categories-level-menu .categories-level-menu__item--active").click()
-                list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1]. \
-                    find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
-                list_booktype[x].click()
-                list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2]. \
-                    find_elements(By.CSS_SELECTOR, "a")
+                self.category_books(i)
+                list_books = self.list_books()
                 link = list_books[n].get_dom_attribute("href")
                 list_books[n].click()
-                sleep(2)
+                sleep(1)
                 url_link = self.driver.current_url
                 print(link)
                 print(url_link)
                 print(str(url_link) == "https://www.chitai-gorod.ru" + str(link))
                 assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
-                sleep(2)
+                sleep(1)
