@@ -85,19 +85,20 @@ class MainPage:
 
     def catalog_books(self):
         list_booktype = self.category_books()
-        list_books = self.list_books()
+        self.list_books()
         sleep(1)
         self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
         sleep(1)
         for i in range(0, len(list_booktype)-1):
             self.category_books(i)
+            list_books = self.list_books()
             self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
             sleep(1)
-            for n in range(0, len(list_books)+1):
+            for n in range(0, len(list_books)-1):
                 self.category_books(i)
-                list_books = self.list_books()
-                link = list_books[n].get_dom_attribute("href")
-                list_books[n].click()
+                new_list_books = self.list_books()
+                link = new_list_books[n].get_dom_attribute("href")
+                new_list_books[n].click()
                 sleep(1)
                 url_link = self.driver.current_url
                 print(link)
