@@ -28,5 +28,4 @@ def test_catalog_books():
     main = MainPage()
     main.open_page("https://www.chitai-gorod.ru/")
     main.catalog_books()
-
     main.close()

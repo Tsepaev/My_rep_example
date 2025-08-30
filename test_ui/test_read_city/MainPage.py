@@ -15,6 +15,7 @@ class MainPage:
         self.buy_button = (By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")
 
     def open_page(self, url):
+        """Открыть страницу. Вписать url'"""
         self.driver = webdriver.Firefox()
         self.driver.maximize_window()
         self.driver.get(url)
@@ -22,6 +23,7 @@ class MainPage:
 
 
     def search(self, book: str):
+        """Поиск. Вписать название книги"""
         sleep(2)
         waiter = WebDriverWait(self.driver, 5)
         self.driver.find_element(By.CSS_SELECTOR, ".search-form__input").send_keys(book)
@@ -39,6 +41,7 @@ class MainPage:
 
 
     def select_book(self, n: int):
+        """Выбрать книгу с индексом. Вписать индекс списка"""
         catalog = self.driver.find_elements(By.CSS_SELECTOR, ".product-card")
         catalog[n].click()
         WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")))
@@ -65,16 +68,40 @@ class MainPage:
     def catalog_books(self):
         WebDriverWait(self.driver, 5).\
             until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".header-location-popup__controls .chg-app-button--primary"))).click()
+
         self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
         self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
         list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
             find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
-        for i in range(0, len(list_booktype)-1):
-            list_booktype[i].click()
+        self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+        sleep(2)
+
+        for x in range(0, len(list_booktype)-1):
+            self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
+            self.driver.find_element(By.CSS_SELECTOR,".categories-level-menu .categories-level-menu__item--active").click()
+            list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
+                find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
+            list_booktype[x].click()
             list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2].\
                 find_elements(By.CSS_SELECTOR, "a")
+            self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+            sleep(2)
+
             for n in range(0, len(list_books)+1):
+                self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
+                self.driver.find_element(By.CSS_SELECTOR,
+                                         ".categories-level-menu .categories-level-menu__item--active").click()
+                list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1]. \
+                    find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
+                list_booktype[x].click()
+                list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2]. \
+                    find_elements(By.CSS_SELECTOR, "a")
                 link = list_books[n].get_dom_attribute("href")
                 list_books[n].click()
+                sleep(2)
                 url_link = self.driver.current_url
-                assert url_link == link
+                print(link)
+                print(url_link)
+                print(str(url_link) == "https://www.chitai-gorod.ru" + str(link))
+                assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
+                sleep(2)
