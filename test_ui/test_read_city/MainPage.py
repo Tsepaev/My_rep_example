@@ -12,7 +12,7 @@ class MainPage:
 
     def __init__(self, driver = WebDriver):
         self.driver = driver
-
+        self.buy_button = (By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")
 
     def open_page(self, url):
         self.driver = webdriver.Firefox()
@@ -33,9 +33,48 @@ class MainPage:
     def get_url(self):
         return self.driver.current_url
 
-    def check_catalog(self) -> list:
+
+    def get_catalog(self) -> list:
         return self.driver.find_elements(By.CSS_SELECTOR, ".product-card")
+
+
+    def select_book(self, n: int):
+        catalog = self.driver.find_elements(By.CSS_SELECTOR, ".product-card")
+        catalog[n].click()
+        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")))
+
+
+    def add_to_bucket(self):
+        self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
+        WebDriverWait(self.driver, 5).until(EC.text_to_be_present_in_element(self.buy_button, "Оформить"))
+        self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
+        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".cart-sidebar__footer")))
+
+
+    def check_price(self):
+        """Возвращает цену книги (price) и сумму к заказу (total_price)"""
+        price = self.driver.find_element(By.CSS_SELECTOR, ".product-price__price").text
+        total_price = self.driver.find_element(By.CSS_SELECTOR, ".cart-sidebar__item-summary .info-item__value").text
+        return price, total_price
 
 
     def close(self):
         self.driver.quit()
+
+
+    def catalog_books(self):
+        WebDriverWait(self.driver, 5).\
+            until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".header-location-popup__controls .chg-app-button--primary"))).click()
+        self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
+        list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
+            find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
+        for i in range(0, len(list_booktype)-1):
+            list_booktype[i].click()
+            list_books = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[2].\
+                find_elements(By.CSS_SELECTOR, "a")
+            for n in range(0, len(list_books)+1):
+                link = list_books[n].get_dom_attribute("href")
+                list_books[n].click()
+                url_link = self.driver.current_url
+                assert url_link == link
