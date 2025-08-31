@@ -20,9 +20,7 @@ class MainPage:
         self.driver.maximize_window()
         self.driver.get(url)
         self.driver.implicitly_wait(6)
-        WebDriverWait(self.driver, 5). \
-            until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".header-location-popup__controls .chg-app-button--primary"))).click()
+        self.driver.find_element(By.CSS_SELECTOR, '.agreement-notice button').click()
 
 
     def search(self, book: str):
@@ -83,26 +81,42 @@ class MainPage:
         return list_books
 
 
-    def catalog_books(self):
-        list_booktype = self.category_books()
-        self.list_books()
+    # def catalog_books(self):
+    #     list_booktype = self.category_books()
+    #     self.list_books()
+    #     sleep(1)
+    #     self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+    #     sleep(1)
+    #     for i in range(0, len(list_booktype)-1):
+    #         self.category_books(i)
+    #         list_books = self.list_books()
+    #         self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+    #         sleep(1)
+    #         for n in range(0, len(list_books)-1):
+    #             self.category_books(i)
+    #             new_list_books = self.list_books()
+    #             link = new_list_books[n].get_dom_attribute("href")
+    #             new_list_books[n].click()
+    #             sleep(1)
+    #             url_link = self.driver.current_url
+    #             print(link)
+    #             print(url_link)
+    #             print(str(url_link) == "https://www.chitai-gorod.ru" + str(link))
+    #             assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
+    #             sleep(1)
+
+    def catalog_books(self, n):
+        """Задать индекс подкатегории n"""
+        self.category_books(n)
+        list_books = self.list_books()
         sleep(1)
         self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
         sleep(1)
-        for i in range(0, len(list_booktype)-1):
-            self.category_books(i)
+        for i in range(0, len(list_books)):
+            self.category_books(n)
             list_books = self.list_books()
-            self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+            link = list_books[i].get_dom_attribute("href")
+            list_books[i].click()
             sleep(1)
-            for n in range(0, len(list_books)-1):
-                self.category_books(i)
-                new_list_books = self.list_books()
-                link = new_list_books[n].get_dom_attribute("href")
-                new_list_books[n].click()
-                sleep(1)
-                url_link = self.driver.current_url
-                print(link)
-                print(url_link)
-                print(str(url_link) == "https://www.chitai-gorod.ru" + str(link))
-                assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
-                sleep(1)
+            url_link = self.driver.current_url
+            assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
