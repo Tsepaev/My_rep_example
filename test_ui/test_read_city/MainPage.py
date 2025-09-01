@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
 from time import sleep
+import allure
 
 class MainPage:
 
@@ -68,14 +69,17 @@ class MainPage:
     def close(self):
         self.driver.quit()
 
-    # self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+
     def category_books(self, n: int = 0) -> list:
         """Клик по каталогу, далее книги, получить список категорий и кликнуть по указанной"""
-        self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
-        self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
+        with allure.step("Кликнуть по кнопке 'Каталог'"):
+            self.driver.find_element(By.CSS_SELECTOR, ".catalog-btn").click()
+        with allure.step("Кликнуть по разделу 'Книги'"):
+            self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
         list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
             find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
-        list_booktype[n].click()
+        with allure.step(f"Кликнуть по {n+1} категории"):
+            list_booktype[n].click()
         return list_booktype
 
 
@@ -96,7 +100,9 @@ class MainPage:
             self.category_books(n)
             list_books = self.list_books()
             link = list_books[i].get_dom_attribute("href")
-            list_books[i].click()
+            with allure.step(f"Кликнуть по {i+1} подкатегории"):
+                list_books[i].click()
             sleep(1)
             url_link = self.driver.current_url
-            assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)
+            with allure.step("Проверить что url страницы соответствует выбранной подкатегории"):
+                assert str(url_link) == "https://www.chitai-gorod.ru" + str(link)

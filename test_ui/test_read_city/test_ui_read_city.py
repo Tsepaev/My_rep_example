@@ -6,26 +6,52 @@ from MainPage import MainPage
 @pytest.fixture()
 def driver() -> MainPage():
     main = MainPage()
-    main.open_page("https://www.chitai-gorod.ru/")
+    with allure.step("Открыть клиент. Перейти на страницу https://www.chitai-gorod.ru/"):
+        main.open_page("https://www.chitai-gorod.ru/")
     yield main
     main.close()
 
 
+@allure.suite("Функционал сайта")
+@allure.title("Проверка поиска книги по названию")
+@allure.tag("UI", "Functional")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.label("owner", "Tsepaev Denis")
+@allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 def test_search(driver):
-    driver.search('Метро 2033')
+    with allure.step("В поле поиска ввести название книги и нажать на 'Поиск'"):
+        driver.search('Метро 2033')
     url = driver.get_url()
     catalog = driver.get_catalog()
-    assert str(url).startswith("https://www.chitai-gorod.ru/search?phrase=") and catalog != []
+    with allure.step("Проверить что в url добавлены параметры 'поиск по фразе' и название книги. Проверить, что список книг не пустой"):
+        assert str(url).startswith("https://www.chitai-gorod.ru/search?phrase=") and catalog != []
 
 
+@allure.suite("Функционал сайта")
+@allure.title("Проверка добавления товара в корзину")
+@allure.tag("UI", "Functional")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.label("owner", "Tsepaev Denis")
+@allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 def test_add_to_bucket(driver):
-    driver.search("Game of Thrones")
-    driver.select_book(2)
-    driver.add_to_bucket()
+    with allure.step("В поле поиска ввести название книги и нажать на 'Поиск'"):
+        driver.search("Game of Thrones")
+    with allure.step("Выбрать книгу и кликнуть по картинке"):
+        driver.select_book(2)
+    with allure.step("Кликнуть по кнопке 'купить', затем 'оформить'"):
+        driver.add_to_bucket()
     price, total_price = driver.check_price()
-    assert price == total_price
+    with allure.step("Проверить, что цена товара соответствует цене 'Итого'"):
+        assert price == total_price
 
 
+@allure.suite("Функционал сайта")
+@allure.sub_suite("Каталог")
+@allure.title("Проверка работоспособности раздела 'Книги'")
+@allure.tag("UI", "Functional")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.label("owner", "Tsepaev Denis")
+@allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 @pytest.mark.parametrize("n", range(0,14))
 def test_catalog(driver, n):
     driver.catalog_books(n)
