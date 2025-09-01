@@ -38,8 +38,7 @@ def test_add_to_bucket(driver):
         driver.search("Game of Thrones")
     with allure.step("Выбрать книгу и кликнуть по картинке"):
         driver.select_book(2)
-    with allure.step("Кликнуть по кнопке 'купить', затем 'оформить'"):
-        driver.add_to_bucket()
+    driver.add_to_bucket()
     price, total_price = driver.check_price()
     with allure.step("Проверить, что цена товара соответствует цене 'Итого'"):
         assert price == total_price

@@ -49,14 +49,19 @@ class MainPage:
         """Выбрать книгу с индексом. Вписать индекс списка"""
         catalog = self.driver.find_elements(By.CSS_SELECTOR, ".product-card")
         catalog[n].click()
-        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")))
 
 
     def add_to_bucket(self):
-        self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
-        WebDriverWait(self.driver, 5).until(EC.text_to_be_present_in_element(self.buy_button, "Оформить"))
-        self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
-        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".cart-sidebar__footer")))
+        WebDriverWait(self.driver, 5).\
+            until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")))
+        with allure.step("Кликнуть по кнопке 'купить'"):
+            self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
+        WebDriverWait(self.driver, 5).\
+            until(EC.text_to_be_present_in_element(self.buy_button, "Оформить"))
+        with allure.step("Кликнуть по кнопке 'оформить'"):
+            self.driver.find_element(By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary").click()
+        WebDriverWait(self.driver, 5).\
+            until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".cart-sidebar__footer")))
 
 
     def check_price(self):
