@@ -83,7 +83,8 @@ class MainPage:
             self.driver.find_element(By.CSS_SELECTOR, ".categories-level-menu .categories-level-menu__item--active").click()
         list_booktype = self.driver.find_elements(By.CSS_SELECTOR, ".categories-level-menu")[1].\
             find_elements(By.CSS_SELECTOR, ".categories-level-menu__item")
-        with allure.step(f"Кликнуть по {n+1} категории"):
+        txt = list_booktype[n].text
+        with allure.step(f"Кликнуть по категории {txt}"):
             list_booktype[n].click()
         return list_booktype
 
@@ -96,16 +97,19 @@ class MainPage:
 
     def catalog_books(self, n):
         """Задать индекс подкатегории n"""
-        self.category_books(n)
-        list_books = self.list_books()
-        sleep(1)
-        self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
-        sleep(1)
+        with allure.step("Cбор данных для автотеста"):
+            self.category_books(n)
+            list_books = self.list_books()
+            sleep(1)
+            with allure.step("Закрыть каталог"):
+                self.driver.find_element(By.CSS_SELECTOR, ".categories-menu__close").click()
+            sleep(1)
         for i in range(0, len(list_books)):
             self.category_books(n)
             list_books = self.list_books()
             link = list_books[i].get_dom_attribute("href")
-            with allure.step(f"Кликнуть по {i+1} подкатегории"):
+            txt = list_books[i].text
+            with allure.step(f"Кликнуть по {txt}"):
                 list_books[i].click()
             sleep(1)
             url_link = self.driver.current_url

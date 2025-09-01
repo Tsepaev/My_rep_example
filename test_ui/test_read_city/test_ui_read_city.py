@@ -15,12 +15,12 @@ def driver() -> MainPage():
 @allure.suite("Функционал сайта")
 @allure.title("Проверка поиска книги по названию")
 @allure.tag("UI", "Functional")
-@allure.severity(allure.severity_level.NORMAL)
+@allure.severity(allure.severity_level.CRITICAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 def test_search(driver):
     with allure.step("В поле поиска ввести название книги и нажать на 'Поиск'"):
-        driver.search('Метро 2033')
+        driver.search('50 дней до моего самоубийства')
     url = driver.get_url()
     catalog = driver.get_catalog()
     with allure.step("Проверить что в url добавлены параметры 'поиск по фразе' и название книги. Проверить, что список книг не пустой"):
@@ -30,14 +30,14 @@ def test_search(driver):
 @allure.suite("Функционал сайта")
 @allure.title("Проверка добавления товара в корзину")
 @allure.tag("UI", "Functional")
-@allure.severity(allure.severity_level.NORMAL)
+@allure.severity(allure.severity_level.CRITICAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 def test_add_to_bucket(driver):
     with allure.step("В поле поиска ввести название книги и нажать на 'Поиск'"):
         driver.search("Game of Thrones")
     with allure.step("Выбрать книгу и кликнуть по картинке"):
-        driver.select_book(2)
+        driver.select_book(0)
     driver.add_to_bucket()
     price, total_price = driver.check_price()
     with allure.step("Проверить, что цена товара соответствует цене 'Итого'"):
@@ -45,7 +45,7 @@ def test_add_to_bucket(driver):
 
 
 @allure.suite("Функционал сайта")
-@allure.sub_suite("Каталог")
+@allure.sub_suite("Каталог. Книги")
 @allure.title("Проверка работоспособности раздела 'Книги'")
 @allure.tag("UI", "Functional")
 @allure.severity(allure.severity_level.NORMAL)
