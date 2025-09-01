@@ -1,22 +1,20 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.common.action_chains import ActionChains
+
 from time import sleep
 import allure
 
 
 class MainPage:
 
-    def __init__(self, driver=WebDriver):
+    def __init__(self, driver):
         self.driver = driver
         self.buy_button = (By.CSS_SELECTOR, ".product-buttons .chg-app-button--primary")
 
     def open_page(self, url):
-        """Открыть страницу. Вписать url'"""
+        """Открыть страницу. Вписать url"""
         self.driver = webdriver.Firefox()
         self.driver.maximize_window()
         self.driver.get(url)
