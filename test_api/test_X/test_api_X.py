@@ -42,4 +42,15 @@ def test_get_company_by_id_error(api, id_company, stat):
 
 
 def test_delete_company(api):
-    api.create_company("SimpleCompany", "SimpleDesc")
+    with allure.step("Получить список компаний. Узнать длину списка"):
+        stat, company_list_before = api.get_company(None)
+    with allure.step("Добавить новую компанию"):
+        status_token, token = api.get_token()
+        status, resp_id = api.create_company("SimpleTESTCompany", "SimpleTESTDesc", token)
+    with allure.step("Удалить добавленную компанию"):
+        status_delete = api.delete_company(resp_id, token)
+    with allure.step("Получить список компаний. Узнать длину списка"):
+        stat, company_list_after = api.get_company(None)
+    with allure.step("Проверить статус команды удаления компании. Проверить, что длина списка в начале теста и в конце теста не изменилась"):
+        assert status_delete == 200 and len(company_list_before) == len(company_list_after)
+

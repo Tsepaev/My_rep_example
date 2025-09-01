@@ -26,12 +26,12 @@ class MainAPI:
         company_list = response.json()
         return response.status_code, company_list
 
-    def create_company(self, name: str, desc: str):
+    def create_company(self, name: str, desc: str, token: str):
         body = {
             "name": name,
             "description": desc
         }
-        response = requests.post(self.url + "company", headers={"x-client-token" : self.token}, json=body)
+        response = requests.post(self.url + "company", headers={"x-client-token" : token}, json=body)
         resp = response.json()
         return response.status_code, resp['id']
 
@@ -39,3 +39,7 @@ class MainAPI:
         response = requests.get(self.url + f"company/{id_company}")
         resp = response.json()
         return response.status_code, resp["id"]
+
+    def delete_company(self, id_company, token):
+        response = requests.get(self.url + f"company/delete/{id_company}", headers={"x-client-token" : token})
+        return response.status_code
