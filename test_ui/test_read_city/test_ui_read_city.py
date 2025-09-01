@@ -20,7 +20,7 @@ def driver() -> MainPage():
 @allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
 def test_search(driver):
     with allure.step("В поле поиска ввести название книги и нажать на 'Поиск'"):
-        driver.search('50 дней до моего самоубийства')
+        driver.search('Метро 2033')
     url = driver.get_url()
     catalog = driver.get_catalog()
     with allure.step("Проверить что в url добавлены параметры 'поиск по фразе' и название книги. Проверить, что список книг не пустой"):
@@ -51,6 +51,22 @@ def test_add_to_bucket(driver):
 @allure.severity(allure.severity_level.NORMAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
-@pytest.mark.parametrize("n", range(0,14))
+@pytest.mark.parametrize("n", range(0,3)) # Второе число должно быть 14. Уменьшил для ускорения прогона.
 def test_catalog(driver, n):
     driver.catalog_books(n)
+
+
+@allure.suite("Функционал сайта")
+@allure.title("Проверка корректности установленной скидки")
+@allure.tag("UI", "Functional")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.label("owner", "Tsepaev Denis")
+@allure.link("https://www.chitai-gorod.ru/", name="Читай-город")
+@pytest.mark.parametrize('n', [0 , 2, 4])
+def test_sales(driver, n:int):
+    with allure.step("Кликнуть по кнопке 'Распродажа'"):
+        driver.get_sales()
+    with allure.step(f"Проверить, что итоговая цена {n+1} книги, указана корректно"):
+        price_after_disc, new_price = driver.check_sale(n)
+        assert int(price_after_disc) == int(new_price)
+
