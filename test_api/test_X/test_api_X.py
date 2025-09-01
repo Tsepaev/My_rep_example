@@ -54,3 +54,10 @@ def test_delete_company(api):
     with allure.step("Проверить статус команды удаления компании. Проверить, что длина списка в начале теста и в конце теста не изменилась"):
         assert status_delete == 200 and len(company_list_before) == len(company_list_after)
 
+
+def test_change_status(api):
+    with allure.step("Добавить новую компанию"):
+        status_token, token = api.get_token()
+        status, resp_id = api.create_company("SimpleTESTCompanyOne", "SimpleTESTDescTwo", token)
+        status_company, status_active = api.change_status(resp_id, token, False)
+        assert status_company == 200 and status_active == False

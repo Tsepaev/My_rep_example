@@ -43,3 +43,12 @@ class MainAPI:
     def delete_company(self, id_company, token):
         response = requests.get(self.url + f"company/delete/{id_company}", headers={"x-client-token" : token})
         return response.status_code
+
+    def change_status(self, id_company: int, token, active: bool):
+        body = {
+            "isActive": active
+        }
+        response = requests.patch(self.url + f"company/status/{id_company}", headers={"x-client-token" : token}, json=body)
+        resp = response.json()
+        status_active = resp["isActive"]
+        return response.status_code, status_active
