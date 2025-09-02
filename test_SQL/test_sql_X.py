@@ -1,12 +1,11 @@
-from sqlalchemy import create_engine, text
 import pytest
 import allure
 
-from MainSQL import MainSQL
 
 
-@pytest.fixture()
-def engine():
-    engine = MainSQL()
+def test_get_count_company(engine):
+    print(engine.get_count_company())
 
-
+@pytest.mark.parametrize('id, value', [(1666, False)])
+def test_update_is_active(engine, id, value):
+    engine.update_is_active(id=id, value=value)

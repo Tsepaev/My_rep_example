@@ -1,12 +1,5 @@
 import allure
 import pytest
-from MainAPI import MainAPI
-
-
-@pytest.fixture()
-def api():
-    resp = MainAPI()
-    return resp
 
 
 def test_auth(api):
@@ -23,6 +16,7 @@ def test_auth(api):
 @pytest.mark.parametrize("active, isActive", [(None, True), (True, True), (False, False)])
 def test_get_company(api, active, isActive: bool):
     status, company_list = api.get_company(active)
+    print(len(company_list))
     assert status == 200 and company_list[0]["isActive"] == isActive
 
 
@@ -64,23 +58,25 @@ def test_get_company_by_id_error(api, id_company, stat):
 
 @allure.suite("Функционал API")
 @allure.title("Проверка. Удалить компанию")
-@allure.tag("API", "Functional")
+@allure.tag("API", "SQL", "Functional")
 @allure.severity(allure.severity_level.NORMAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("http://51.250.26.13:8083/", name="X-client")
-def test_delete_company(api):
+@pytest.mark.parametrize('active', [None, True, False])
+def test_delete_company(api, engine, active):
     with allure.step("Получить список компаний. Узнать длину списка"):
-        stat, company_list_before = api.get_company(None)
+        stat, company_list_before = api.get_company(active)
     with allure.step("Добавить новую компанию"):
         status_token, token = api.get_token()
         status, resp_id = api.create_company("SimpleTESTCompany", "SimpleTESTDesc", token)
     with allure.step("Удалить добавленную компанию"):
         status_delete = api.delete_company(resp_id, token)
     with allure.step("Получить список компаний. Узнать длину списка"):
-        stat, company_list_after = api.get_company(None)
+        stat, company_list_after = api.get_company(active)
     with allure.step(
-            "Проверить статус команды удаления компании. Проверить, что длина списка в начале теста и в конце теста не изменилась"):
-        assert status_delete == 200 and len(company_list_before) == len(company_list_after)
+            "Проверить статус команды удаления компании. Проверить, что длина списка компаний не изменилась и соответствует БД"):
+        assert status_delete == 200 and len(company_list_before) == len(
+            company_list_after) == engine.get_count_company(active)
 
 
 @allure.suite("Функционал API")
