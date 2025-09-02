@@ -1,9 +1,6 @@
-import requests
 import allure
 import pytest
 from MainAPI import MainAPI
-
-"leyla, water-fairy"
 
 
 @pytest.fixture()

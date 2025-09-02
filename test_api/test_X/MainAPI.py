@@ -1,8 +1,4 @@
-from http.client import responses
-
 import requests
-import allure
-import pytest
 
 
 class MainAPI:
