@@ -38,3 +38,15 @@ class MainSQL:
             result = connection.execute(stmt, parameters={"id" : id})
             data = result.fetchall()
             return data
+
+
+    def create_company(self, id, active, name):
+        param = {
+            "id" : id,
+            "active" : active,
+            "name" : name
+        }
+        with self.engine.connect() as connection:
+            stmt = text("INSERT INTO company (id, is_active, name) VALUES (:id, :active, :name)")
+            result = connection.execute(stmt, parameters=param)
+            connection.commit()
