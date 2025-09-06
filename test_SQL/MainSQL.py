@@ -24,3 +24,17 @@ class MainSQL:
             query = text("UPDATE company SET is_active = :value where id = :id")
             result = connection.execute(query, parameters={"id" : id, "value" : value})
             connection.commit()
+
+
+    def delete_company_by_id(self, id: int):
+        with self.engine.connect() as connection:
+            stmt = text("DELETE FROM company WHERE id = :id")
+            result = connection.execute(stmt, parameters={"id" : id})
+            connection.commit()
+
+    def get_company_by_id(self, id: int):
+        with self.engine.connect() as connection:
+            stmt = text("SELECT id, name FROM company WHERE id = :id")
+            result = connection.execute(stmt, parameters={"id" : id})
+            data = result.fetchall()
+            return data

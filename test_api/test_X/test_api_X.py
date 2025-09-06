@@ -26,9 +26,16 @@ def test_get_company(api, active, isActive: bool):
 @allure.severity(allure.severity_level.NORMAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("http://51.250.26.13:8083/", name="X-client")
-def test_create_company(api):
-    status, resp_id = api.create_company("SimpleCompany", "SimpleDesc")
-    assert status == 201
+def test_create_company(api, engine):
+    with allure.step("Получить список всех компаний из БД"):
+        count_1 = engine.get_count_company()
+    with allure.step("Добавить новую компанию"):
+        status_token, token = api.get_token()
+        status, resp_id = api.create_company("SimpleCompany1", "SimpleDesc1", token)
+    with allure.step("Получить обновленный список компаний из БД"):
+        count_2 = engine.get_count_company()
+    with allure.step("Статус запроса 201. Список компаний увеличился"):
+        assert status == 201 and count_2 > count_1
 
 
 @allure.suite("Функционал API")
@@ -37,10 +44,10 @@ def test_create_company(api):
 @allure.severity(allure.severity_level.NORMAL)
 @allure.label("owner", "Tsepaev Denis")
 @allure.link("http://51.250.26.13:8083/", name="X-client")
-@pytest.mark.parametrize("id_company, stat", [(1629, 200)])
-def test_get_company_by_id(api, id_company, stat):
+@pytest.mark.parametrize("id_company", [1629])
+def test_get_company_by_id(api, id_company):
     status, resp_id = api.get_company_by_id(id_company)
-    assert status == stat and resp_id == id_company
+    assert status == 200 and resp_id == id_company
 
 
 @allure.suite("Функционал API")
